@@ -1,0 +1,89 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Retailer Order Dashboard Action -->
+    <record id="action_retailer_order_dashboard" model="ir.actions.act_window">
+        <field name="name">Retailer Order Dashboard</field>
+        <field name="res_model">retailer.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="path">retailer-orders-dashboard</field>
+        <field name="context">{'search_default_group_by_state': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first retailer order.
+            </p>
+            <p>
+                Track orders from order creation through inventory processing
+                and shipping until delivery.
+            </p>
+        </field>
+    </record>
+
+    <!-- Dashboard Search and Filters -->
+    <record id="view_retailer_order_dashboard_search" model="ir.ui.view">
+        <field name="name">retailer.order.dashboard.search</field>
+        <field name="model">retailer.order</field>
+        <field name="arch" type="xml">
+            <search string="Retailer Orders">
+
+                <field name="name"/>
+                <field name="retailer_id"/>
+                <field name="order_taken_by"/>
+                <field name="shipping_employee_id"/>
+
+                <!-- Filter by Order Status -->
+                <filter name="filter_new"
+                        string="New"
+                        domain="[('state', '=', 'new')]"/>
+
+                <filter name="filter_processing"
+                        string="Processing"
+                        domain="[('state', '=', 'processing')]"/>
+
+                <filter name="filter_adding_products"
+                        string="Adding Products"
+                        domain="[('state', '=', 'adding_products')]"/>
+
+                <filter name="filter_ready_to_ship"
+                        string="Ready to Ship"
+                        domain="[('state', '=', 'ready_to_ship')]"/>
+
+                <filter name="filter_shipping"
+                        string="Shipping"
+                        domain="[('state', '=', 'shipping')]"/>
+
+                <filter name="filter_dispatched"
+                        string="Dispatched"
+                        domain="[('state', '=', 'dispatched')]"/>
+
+                <filter name="filter_delivered"
+                        string="Delivered"
+                        domain="[('state', '=', 'delivered')]"/>
+
+                <filter name="filter_cancelled"
+                        string="Cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+
+                <separator/>
+
+                <!-- Group Orders by Status -->
+                <filter name="group_by_state"
+                        string="Order Status"
+                        context="{'group_by': 'state'}"/>
+
+                <!-- Group Orders by Retailer -->
+                <filter name="group_by_retailer"
+                        string="Retailer"
+                        context="{'group_by': 'retailer_id'}"/>
+
+                <!-- Group Orders by Order Date -->
+                <filter name="group_by_order_date"
+                        string="Order Date"
+                        context="{'group_by': 'order_date'}"/>
+
+            </search>
+        </field>
+    </record>
+
+</odoo>

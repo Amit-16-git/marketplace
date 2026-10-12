@@ -1,0 +1,31 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Main Application Menu -->
+    <menuitem
+        id="menu_retailer_order_root"
+        name="Retailer Order Management"
+        sequence="10"
+        web_icon="retailer_order_management,static/description/icon.png"
+    />
+
+    <!-- Order Dashboard Menu -->
+    <menuitem
+        id="menu_retailer_order_dashboard"
+        name="Order Dashboard"
+        parent="menu_retailer_order_root"
+        action="action_retailer_order_dashboard"
+        sequence="1"
+    />
+
+    <!-- All Retailer Orders Menu -->
+    <menuitem
+        id="menu_retailer_orders"
+        name="Retailer Orders"
+        parent="menu_retailer_order_root"
+        action="action_retailer_order_dashboard"
+        sequence="2"
+    />
+
+</odoo>
