@@ -1,0 +1,39 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Main Category -->
+    <record id="module_category_retailer_order" model="ir.module.category">
+        <field name="name">Retailer Order Management</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- Order Taking Department -->
+    <record id="group_retailer_order_taking" model="res.groups">
+        <field name="name">Order Taking</field>
+        <field name="category_id" ref="module_category_retailer_order"/>
+    </record>
+
+    <!-- Inventory Department -->
+    <record id="group_retailer_inventory" model="res.groups">
+        <field name="name">Inventory</field>
+        <field name="category_id" ref="module_category_retailer_order"/>
+    </record>
+
+    <!-- Shipping Department -->
+    <record id="group_retailer_shipping" model="res.groups">
+        <field name="name">Shipping</field>
+        <field name="category_id" ref="module_category_retailer_order"/>
+    </record>
+
+    <!-- Manager -->
+    <record id="group_retailer_order_manager" model="res.groups">
+        <field name="name">Order Manager</field>
+        <field name="category_id" ref="module_category_retailer_order"/>
+        <field name="implied_ids"
+               eval="[(4, ref('group_retailer_order_taking')),
+                      (4, ref('group_retailer_inventory')),
+                      (4, ref('group_retailer_shipping'))]"/>
+    </record>
+
+</odoo>
