@@ -4,7 +4,11 @@
     'version': '20.0.1.0.0',
     'author': 'Agile',
     'license': 'LGPL-3',
-    'depends': ['base'],
+    'depends': [
+        'base',
+        'product',
+        'stock',
+    ],
     'data': [
         'security/ir.access.csv',
         'views/my_app_views.xml',
