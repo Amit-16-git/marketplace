@@ -1,0 +1,75 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Retailer Shop List View -->
+    <record id="view_my_app_shop_list" model="ir.ui.view">
+        <field name="name">my_app.shop.list</field>
+        <field name="model">my_app.shop</field>
+        <field name="arch" type="xml">
+            <list string="Retailer Shops">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Retailer Shop Form View -->
+    <record id="view_my_app_shop_form" model="ir.ui.view">
+        <field name="name">my_app.shop.form</field>
+        <field name="model">my_app.shop</field>
+        <field name="arch" type="xml">
+            <form string="Retailer Shop">
+                <sheet>
+
+                    <!-- Shop Name at the Top -->
+                    <div class="oe_title">
+                        <label for="name"
+                               string="Retailer Shop Name"/>
+                        <h1>
+                            <field name="name"
+                                   placeholder="Enter retailer shop name"/>
+                        </h1>
+                    </div>
+
+                    <!-- Product Lines Below -->
+                    <notebook>
+                        <page string="Products">
+                            <field name="product_ids">
+                                <list editable="bottom">
+                                    <field name="name"
+                                           string="Product Name"/>
+                                    <field name="quantity"
+                                           string="Quantity"/>
+                                    <field name="rate"
+                                           string="Rate"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_my_app_shops"
+            model="ir.actions.act_window">
+        <field name="name">Retailer Shops</field>
+        <field name="res_model">my_app.shop</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Main Application Menu -->
+    <menuitem id="menu_my_app_root"
+              name="My App"
+              sequence="10"/>
+
+    <!-- Shops Submenu -->
+    <menuitem id="menu_my_app_shops"
+              name="Retailer Shops"
+              parent="menu_my_app_root"
+              action="action_my_app_shops"
+              sequence="10"/>
+
+</odoo>
