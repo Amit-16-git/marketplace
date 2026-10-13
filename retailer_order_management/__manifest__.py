@@ -5,20 +5,12 @@
     'category': 'Operations',
     'summary': 'Manage retailer orders and workflow',
     'description': """
-        Manage retailer orders, order status, products,
-        totals, shipping, and delivery.
+        Retailer Order Management
+        =========================
+        Custom retailer order management application.
     """,
-    'depends': [
-        'base',
-    ],
-    'data': [
-        'security/security.xml',
-        'security/ir.model.access.csv',
-        'data/sequence.xml',
-        'views/retailer_order_views.xml',
-        'views/retailer_order_dashboard.xml',
-        'views/retailer_order_menus.xml',
-    ],
+    'depends': ['base'],
+    'data': [],
     'installable': True,
     'application': True,
     'license': 'LGPL-3',
