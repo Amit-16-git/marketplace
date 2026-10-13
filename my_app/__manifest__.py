@@ -1,10 +1,8 @@
-
 {
     'name': 'My App',
-    'version': '19.0.1',
+    'version': '20.0.1.0.0',
     'depends': ['base'],
     'data': [
-        'security/ir.model.access.csv',
         'views/my_app_views.xml',
     ],
     'application': True,
