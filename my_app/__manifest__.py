@@ -5,7 +5,7 @@
     'license': 'LGPL-3',
     'depends': ['base'],
     'data': [
-        
+        'security/ir.access.csv',
         'views/my_app_views.xml',
     ],
     'application': True,
