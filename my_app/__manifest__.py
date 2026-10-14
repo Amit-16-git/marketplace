@@ -20,6 +20,7 @@
         'data/sequence.xml',
         'views/my_app_views.xml',
         'views/order_views.xml',
+        'views/inventory_views.xml',
         'views/dashboard_views.xml',
     ],
 

@@ -32,6 +32,7 @@ class RetailerOrder(models.Model):
             ('new', 'New'),
             ('checking_inventory', 'Checking Inventory'),
             ('inventory_checked', 'Inventory Checked'),
+            ('pending_stock', 'Pending Stock'),
             ('processing', 'Processing Order'),
             ('completed', 'Completed'),
             ('on_hold', 'On Hold'),
@@ -101,7 +102,7 @@ class RetailerOrder(models.Model):
                 for line in order.order_line_ids
             )
 
-    # Generate the order number and record initial status.
+    # Generate order number and record initial status.
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -136,7 +137,7 @@ class RetailerOrder(models.Model):
 
         return result
 
-    # Create a history record with elevated permissions.
+    # Create history records with elevated permissions.
     def _log_status_change(self, old_state, new_state):
         self.ensure_one()
 
@@ -168,12 +169,19 @@ class RetailerOrder(models.Model):
             'department': 'inventory',
         })
 
-    # Complete inventory checking and send to processing.
+    # Mark inventory check as complete.
     def action_inventory_checked(self):
         self.write({
             'state': 'inventory_checked',
             'department': 'processing',
             'assigned_user_id': False,
+        })
+
+    # Mark order as pending because of a stock-related issue.
+    def action_pending_stock(self):
+        self.write({
+            'state': 'pending_stock',
+            'department': 'inventory',
         })
 
     # Start order processing.
@@ -308,6 +316,7 @@ class RetailerOrderHistory(models.Model):
             ('new', 'New'),
             ('checking_inventory', 'Checking Inventory'),
             ('inventory_checked', 'Inventory Checked'),
+            ('pending_stock', 'Pending Stock'),
             ('processing', 'Processing Order'),
             ('completed', 'Completed'),
             ('on_hold', 'On Hold'),
@@ -322,6 +331,7 @@ class RetailerOrderHistory(models.Model):
             ('new', 'New'),
             ('checking_inventory', 'Checking Inventory'),
             ('inventory_checked', 'Inventory Checked'),
+            ('pending_stock', 'Pending Stock'),
             ('processing', 'Processing Order'),
             ('completed', 'Completed'),
             ('on_hold', 'On Hold'),
