@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Manager Group -->
+    <record id="group_my_app_manager" model="res.groups">
+        <field name="name">My App Manager</field>
+        <field name="comment">Can manage and oversee retailer orders.</field>
+        <field name="implied_ids"
+               eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Inventory Check Group -->
+    <record id="group_my_app_inventory" model="res.groups">
+        <field name="name">Inventory Check Staff</field>
+        <field name="comment">Can check inventory availability for retailer orders.</field>
+        <field name="implied_ids"
+               eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Order Processing Group -->
+    <record id="group_my_app_processing" model="res.groups">
+        <field name="name">Order Processing Staff</field>
+        <field name="comment">Can add products and quantities to retailer orders.</field>
+        <field name="implied_ids"
+               eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Shipping Group -->
+    <record id="group_my_app_shipping" model="res.groups">
+        <field name="name">Shipping Staff</field>
+        <field name="comment">Can manage orders ready for shipping.</field>
+        <field name="implied_ids"
+               eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

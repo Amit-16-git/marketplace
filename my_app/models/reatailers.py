@@ -6,9 +6,22 @@ class RetailerShop(models.Model):
     _name = 'my_app.shop'
     _description = 'Retailer Shop'
 
+    # NEW FEATURE: Display the newest retailer shops first.
+    # Odoo automatically maintains create_date and write_date.
+    _order = 'create_date desc'
+
     name = fields.Char(
         string='Retailer Shop Name',
         required=True,
+    )
+
+    # NEW FEATURE: Active/Archive status for retailer shops.
+    # Active retailers remain available; archived retailers can be hidden
+    # from normal lists without deleting their records.
+    active = fields.Boolean(
+        string='Active',
+        default=True,
+        help='Uncheck this to archive the retailer shop.',
     )
 
     product_ids = fields.One2many(
@@ -48,6 +61,8 @@ class RetailerProduct(models.Model):
         required=True,
     )
 
+    # EXISTING FEATURE: Automatically fill the unit price
+    # when an Inventory product is selected.
     @api.onchange('product_id')
     def _onchange_product_id(self):
         for line in self:

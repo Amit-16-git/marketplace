@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Manager Dashboard Client Action -->
+    <record id="action_my_app_manager_dashboard"
+            model="ir.actions.client">
+        <field name="name">Manager Dashboard</field>
+        <field name="tag">my_app.manager_dashboard</field>
+    </record>
+
+    <!-- Manager Dashboard Menu -->
+    <menuitem id="menu_my_app_manager_dashboard"
+              name="Manager Dashboard"
+              parent="menu_my_app_root"
+              action="action_my_app_manager_dashboard"
+              sequence="1"
+              groups="my_app.group_my_app_manager"/>
+
+</odoo>

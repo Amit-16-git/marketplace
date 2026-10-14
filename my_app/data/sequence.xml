@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Automatically generate unique retailer order numbers. -->
+    <record id="sequence_my_app_order" model="ir.sequence">
+        <field name="name">Retailer Order</field>
+        <field name="code">my_app.order</field>
+        <field name="prefix">ORD/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>
