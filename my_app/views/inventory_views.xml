@@ -135,12 +135,12 @@
         <field name="act_window_id" ref="action_my_app_inventory_orders"/>
     </record>
 
-    <!-- Inventory Check Menu: inventory staff only -->
+    <!-- Inventory Check Menu: Administrator and My App Manager -->
     <menuitem id="menu_my_app_inventory_orders"
               name="Inventory Check"
               parent="my_app.menu_my_app_root"
               action="action_my_app_inventory_orders"
               sequence="15"
-              groups="my_app.group_my_app_inventory"/>
+              groups="base.group_system,my_app.group_my_app_manager"/>
 
 </odoo>
