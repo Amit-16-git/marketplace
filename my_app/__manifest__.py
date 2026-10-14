@@ -6,12 +6,14 @@
     'author': 'Agile',
     'license': 'LGPL-3',
     'category': 'Sales',
+
     'depends': [
         'base',
         'product',
         'stock',
         'mail',
     ],
+
     'data': [
         # Security
         'security/security.xml',
@@ -24,9 +26,10 @@
         'views/my_app_views.xml',
         'views/order_views.xml',
 
-        # Manager dashboard action and menu
+        # Management Dashboard
         'views/dashboard_views.xml',
     ],
+
     'application': True,
     'installable': True,
 }
