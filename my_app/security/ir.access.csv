@@ -1,8 +1,8 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_my_app_shop_user,Shop access,my_app.model_my_app_shop,base.group_user,1,1,1,1
-access_my_app_product_user,Product access,my_app.model_my_app_product,base.group_user,1,1,1,1
-access_my_app_order_user,Order access,my_app.model_my_app_order,base.group_user,1,1,1,1
-access_my_app_order_line_user,Order line access,my_app.model_my_app_order_line,base.group_user,1,1,1,1
-access_my_app_order_history_user,Order history read access,my_app.model_my_app_order_history,base.group_user,1,0,0,0
-access_my_app_order_inventory,Inventory Staff Order Access,my_app.model_my_app_order,my_app.group_my_app_inventory,1,1,1,0
-access_my_app_order_line_inventory,Inventory Staff Order Line Access,my_app.model_my_app_order_line,my_app.group_my_app_inventory,1,1,1,0
+id,name,model_id/id,group_id/id,operation,domain
+access_my_app_shop_user,Shop access,my_app.model_my_app_shop,base.group_user,crud,
+access_my_app_product_user,Product access,my_app.model_my_app_product,base.group_user,crud,
+access_my_app_order_user,Order access,my_app.model_my_app_order,base.group_user,crud,
+access_my_app_order_line_user,Order line access,my_app.model_my_app_order_line,base.group_user,crud,
+access_my_app_order_history_user,Order history read access,my_app.model_my_app_order_history,base.group_user,r,
+access_my_app_order_inventory,Inventory Staff Order Access,my_app.model_my_app_order,my_app.group_my_app_inventory,crud,
+access_my_app_order_line_inventory,Inventory Staff Order Line Access,my_app.model_my_app_order_line,my_app.group_my_app_inventory,crud,
