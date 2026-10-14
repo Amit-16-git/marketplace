@@ -8,8 +8,6 @@
         <field name="arch" type="xml">
             <list string="Retailer Shops">
                 <field name="name"/>
-                <field name="active"/>
-                <field name="create_date"/>
             </list>
         </field>
     </record>
@@ -27,12 +25,6 @@
                             <field name="name"/>
                         </h1>
                     </div>
-
-                    <group>
-                        <field name="active"/>
-                        <field name="create_date" readonly="1"/>
-                        <field name="write_date" readonly="1"/>
-                    </group>
 
                     <notebook>
                         <page string="Products">
@@ -63,12 +55,11 @@
               name="My App"
               sequence="10"/>
 
-    <!-- Retailer Shops Menu: Managers Only -->
+    <!-- Retailer Shops Menu -->
     <menuitem id="menu_my_app_shops"
               name="Retailer Shops"
               parent="my_app.menu_my_app_root"
               action="action_my_app_shops"
-              sequence="10"
-              groups="my_app.group_my_app_manager"/>
+              sequence="10"/>
 
 </odoo>
