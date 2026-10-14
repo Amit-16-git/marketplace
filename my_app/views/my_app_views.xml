@@ -1,63 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- Retailer Shop List -->
-    <record id="view_my_app_shop_list" model="ir.ui.view">
-        <field name="name">my_app.shop.list</field>
-        <field name="model">my_app.shop</field>
+
+    <!-- Management Dashboard List View -->
+    <record id="view_my_app_dashboard_list" model="ir.ui.view">
+        <field name="name">my_app.order.dashboard.list</field>
+        <field name="model">my_app.order</field>
         <field name="arch" type="xml">
-            <list string="Retailer Shops">
-                <field name="name"/>
+            <list string="Management Dashboard"
+                  create="false"
+                  edit="false"
+                  delete="false">
+                <field name="retailer_id" string="Retailer Name"/>
+                <field name="create_date" string="Created Time"/>
+                <field name="write_date" string="Updated Time"/>
+                <field name="state" string="Status"/>
             </list>
         </field>
     </record>
 
-    <!-- Retailer Shop Form -->
-    <record id="view_my_app_shop_form" model="ir.ui.view">
-        <field name="name">my_app.shop.form</field>
-        <field name="model">my_app.shop</field>
-        <field name="arch" type="xml">
-            <form string="Retailer Shop">
-                <sheet>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1>
-                            <field name="name"/>
-                        </h1>
-                    </div>
-
-                    <notebook>
-                        <page string="Products">
-                            <field name="product_ids">
-                                <list editable="bottom">
-                                    <field name="product_id"
-                                           options="{'no_create': True}"/>
-                                    <field name="quantity"/>
-                                    <field name="rate"/>
-                                </list>
-                            </field>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
-        </field>
+    <!-- Management Dashboard Action -->
+    <record id="action_my_app_management_dashboard"
+            model="ir.actions.act_window">
+        <field name="name">Management Dashboard</field>
+        <field name="res_model">my_app.order</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_my_app_dashboard_list"/>
     </record>
 
-    <!-- Retailer Shop Action -->
-    <record id="action_my_app_shops" model="ir.actions.act_window">
-        <field name="name">Retailer Shops</field>
-        <field name="res_model">my_app.shop</field>
-        <field name="view_mode">list,form</field>
-    </record>
-
-    <!-- My App Root Menu -->
-    <menuitem id="menu_my_app_root"
-              name="My App"
-              sequence="10"/>
-
-    <!-- Retailer Shops Menu -->
-    <menuitem id="menu_my_app_shops"
-              name="Retailer Shops"
+    <!-- Management Dashboard Menu -->
+    <menuitem id="menu_my_app_management_dashboard"
+              name="Management Dashboard"
               parent="menu_my_app_root"
-              action="action_my_app_shops"
-              sequence="10"/>
+              action="action_my_app_management_dashboard"
+              sequence="20"
+              groups="my_app.group_my_app_manager"/>
+
 </odoo>
