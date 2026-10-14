@@ -1,4 +1,3 @@
-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
@@ -18,7 +17,7 @@ class RetailerOrder(models.Model):
         index=True,
     )
 
-    # Link this order to an existing retailer shop.
+    # Linked retailer.
     retailer_id = fields.Many2one(
         'my_app.shop',
         string='Retailer',
@@ -27,7 +26,7 @@ class RetailerOrder(models.Model):
         index=True,
     )
 
-    # Order workflow.
+    # Order workflow status.
     state = fields.Selection(
         [
             ('new', 'New'),
@@ -43,10 +42,9 @@ class RetailerOrder(models.Model):
         required=True,
         default='new',
         index=True,
-        tracking=True,
     )
 
-    # Department responsible for the current stage.
+    # Department responsible for the order.
     department = fields.Selection(
         [
             ('inventory', 'Inventory'),
@@ -60,14 +58,14 @@ class RetailerOrder(models.Model):
         index=True,
     )
 
-    # Staff member currently handling the order.
+    # Staff member handling the order.
     assigned_user_id = fields.Many2one(
         'res.users',
         string='Assigned Staff',
         index=True,
     )
 
-    # Product lines for the order.
+    # Order product lines.
     order_line_ids = fields.One2many(
         'my_app.order.line',
         'order_id',
@@ -75,7 +73,7 @@ class RetailerOrder(models.Model):
         copy=True,
     )
 
-    # Calculated order total.
+    # Automatically calculated order total.
     amount_total = fields.Float(
         string='Total Amount',
         compute='_compute_amount_total',
@@ -87,7 +85,7 @@ class RetailerOrder(models.Model):
         string='Hold Reason',
     )
 
-    # Status-change audit records.
+    # Status-change audit history.
     history_ids = fields.One2many(
         'my_app.order.history',
         'order_id',
@@ -95,7 +93,6 @@ class RetailerOrder(models.Model):
         readonly=True,
     )
 
-    # Odoo automatically maintains create_date and write_date.
     @api.depends('order_line_ids.quantity', 'order_line_ids.rate')
     def _compute_amount_total(self):
         for order in self:
@@ -104,13 +101,15 @@ class RetailerOrder(models.Model):
                 for line in order.order_line_ids
             )
 
+    # Generate the order number and record initial status.
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if not vals.get('name') or vals.get('name') == 'New':
-                vals['name'] = self.env['ir.sequence'].next_by_code(
-                    'my_app.order'
-                ) or 'New'
+                vals['name'] = (
+                    self.env['ir.sequence'].next_by_code('my_app.order')
+                    or 'New'
+                )
 
         orders = super().create(vals_list)
 
@@ -119,6 +118,7 @@ class RetailerOrder(models.Model):
 
         return orders
 
+    # Record status changes.
     def write(self, vals):
         old_states = {
             order.id: order.state
@@ -130,15 +130,17 @@ class RetailerOrder(models.Model):
         if 'state' in vals:
             for order in self:
                 old_state = old_states.get(order.id)
+
                 if old_state != order.state:
                     order._log_status_change(old_state, order.state)
 
         return result
 
+    # Create a history record with elevated permissions.
     def _log_status_change(self, old_state, new_state):
         self.ensure_one()
 
-        self.env['my_app.order.history'].create({
+        self.env['my_app.order.history'].sudo().create({
             'order_id': self.id,
             'old_state': old_state or False,
             'new_state': new_state,
@@ -149,21 +151,24 @@ class RetailerOrder(models.Model):
     # Claim an order for the current staff member.
     def action_claim_order(self):
         for order in self:
-            if order.assigned_user_id and order.assigned_user_id != self.env.user:
+            if (
+                order.assigned_user_id
+                and order.assigned_user_id != self.env.user
+            ):
                 raise UserError(
                     _('This order is already assigned to another staff member.')
                 )
 
             order.assigned_user_id = self.env.user
 
-    # Inventory staff starts checking stock.
+    # Start inventory checking.
     def action_start_inventory_check(self):
         self.write({
             'state': 'checking_inventory',
             'department': 'inventory',
         })
 
-    # Inventory staff completes the stock check.
+    # Complete inventory checking and send to processing.
     def action_inventory_checked(self):
         self.write({
             'state': 'inventory_checked',
@@ -171,30 +176,31 @@ class RetailerOrder(models.Model):
             'assigned_user_id': False,
         })
 
-    # Processing staff starts work.
+    # Start order processing.
     def action_start_processing(self):
         self.write({
             'state': 'processing',
             'department': 'processing',
         })
 
-    # Processing staff finishes product selection.
+    # Complete order processing.
     def action_complete_processing(self):
         self.write({
             'state': 'completed',
             'department': 'management',
         })
 
-    # Put an order on hold with a reason.
+    # Put an order on hold.
     def action_put_on_hold(self):
         for order in self:
             if not order.hold_reason:
                 raise UserError(
                     _('Enter a hold reason before putting an order on hold.')
                 )
+
             order.state = 'on_hold'
 
-    # Resume an order from hold.
+    # Resume an order according to its department.
     def action_resume_order(self):
         for order in self:
             if order.department == 'inventory':
@@ -204,7 +210,7 @@ class RetailerOrder(models.Model):
             else:
                 order.state = 'processing'
 
-    # Manager-facing actions for later shipping workflow.
+    # Mark the order ready for shipping.
     def action_ready_to_ship(self):
         self.write({
             'state': 'ready_to_ship',
@@ -212,6 +218,7 @@ class RetailerOrder(models.Model):
             'assigned_user_id': False,
         })
 
+    # Mark the order as shipped.
     def action_mark_shipped(self):
         self.write({
             'state': 'shipped',
@@ -273,9 +280,14 @@ class RetailerOrderLine(models.Model):
     def _check_quantity_and_rate(self):
         for line in self:
             if line.quantity <= 0:
-                raise ValidationError(_('Quantity must be greater than zero.'))
+                raise ValidationError(
+                    _('Quantity must be greater than zero.')
+                )
+
             if line.rate < 0:
-                raise ValidationError(_('Unit price cannot be negative.'))
+                raise ValidationError(
+                    _('Unit price cannot be negative.')
+                )
 
 
 class RetailerOrderHistory(models.Model):
