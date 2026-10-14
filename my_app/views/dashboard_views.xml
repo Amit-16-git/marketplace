@@ -10,10 +10,12 @@
                   create="false"
                   edit="false"
                   delete="false">
+
                 <field name="retailer_id" string="Retailer Name"/>
                 <field name="create_date" string="Created Time"/>
                 <field name="write_date" string="Updated Time"/>
                 <field name="state" string="Status"/>
+
             </list>
         </field>
     </record>
@@ -30,9 +32,10 @@
     <!-- Management Dashboard Menu -->
     <menuitem id="menu_my_app_management_dashboard"
               name="Management Dashboard"
-              parent="menu_my_app_root"
+              parent="my_app.menu_my_app_root"
               action="action_my_app_management_dashboard"
-              sequence="1"
+              sequence="20"
               groups="my_app.group_my_app_manager"/>
 
 </odoo>
+```

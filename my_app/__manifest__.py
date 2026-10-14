@@ -15,18 +15,11 @@
     ],
 
     'data': [
-        # Security
         'security/security.xml',
         'security/ir.access.csv',
-
-        # Order numbering
         'data/sequence.xml',
-
-        # Retailer and order views
         'views/my_app_views.xml',
         'views/order_views.xml',
-
-        # Management Dashboard
         'views/dashboard_views.xml',
     ],
 
