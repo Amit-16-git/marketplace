@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <!-- ===================================================== -->
-    <!-- INVENTORY CHECK LIST VIEW                             -->
-    <!-- ===================================================== -->
+    <!-- INVENTORY CHECK LIST -->
     <record id="view_my_app_inventory_list" model="ir.ui.view">
         <field name="name">my_app.inventory.list</field>
         <field name="model">my_app.order</field>
@@ -20,9 +18,7 @@
         </field>
     </record>
 
-    <!-- ===================================================== -->
-    <!-- INVENTORY CHECK FORM VIEW                             -->
-    <!-- ===================================================== -->
+    <!-- INVENTORY CHECK FORM -->
     <record id="view_my_app_inventory_form" model="ir.ui.view">
         <field name="name">my_app.inventory.form</field>
         <field name="model">my_app.order</field>
@@ -43,6 +39,10 @@
                             type="object"
                             string="Inventory Checked"
                             class="btn-primary"/>
+
+                    <button name="action_pending_stock"
+                            type="object"
+                            string="Pending Stock"/>
 
                     <button name="action_put_on_hold"
                             type="object"
@@ -73,6 +73,7 @@
 
                         <group string="Order Details">
                             <field name="create_date" readonly="True"/>
+                            <field name="write_date" readonly="True"/>
                             <field name="amount_total" readonly="True"/>
                         </group>
                     </group>
@@ -83,14 +84,26 @@
                                 <list>
                                     <field name="product_id"/>
                                     <field name="quantity"/>
-                                    <field name="price_unit"/>
-                                    <field name="price_subtotal"/>
+                                    <field name="rate"/>
+                                    <field name="subtotal"/>
                                 </list>
                             </field>
                         </page>
 
-                        <page string="Notes">
-                            <field name="notes"/>
+                        <page string="Hold Details">
+                            <field name="hold_reason"
+                                   placeholder="Enter the reason for putting this order on hold..."/>
+                        </page>
+
+                        <page string="Status History">
+                            <field name="history_ids" readonly="True">
+                                <list>
+                                    <field name="changed_on"/>
+                                    <field name="old_state"/>
+                                    <field name="new_state"/>
+                                    <field name="changed_by_id"/>
+                                </list>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -98,25 +111,33 @@
         </field>
     </record>
 
-    <!-- ===================================================== -->
-    <!-- INVENTORY CHECK ACTION                                -->
-    <!-- Excludes Ready to Ship and Shipped orders             -->
-    <!-- ===================================================== -->
+    <!-- INVENTORY CHECK ACTION -->
     <record id="action_my_app_inventory_orders" model="ir.actions.act_window">
         <field name="name">Inventory Check</field>
         <field name="res_model">my_app.order</field>
         <field name="view_mode">list,form</field>
-        <field name="view_id" ref="view_my_app_inventory_list"/>
         <field name="search_view_id" ref="my_app.view_my_app_order_search"/>
-        <field name="domain">
-            [('state', 'in', ['new', 'checking_inventory', 'inventory_checked', 'pending_stock', 'processing', 'completed', 'on_hold'])]
-        </field>
-        <field name="context">{}</field>
+        <field name="domain">[('state', 'in', ['new', 'checking_inventory', 'inventory_checked', 'pending_stock', 'processing', 'completed', 'on_hold'])]</field>
     </record>
 
-    <!-- ===================================================== -->
-    <!-- INVENTORY CHECK MENU                                  -->
-    <!-- ===================================================== -->
+    <!-- USE THE INVENTORY-SPECIFIC LIST AND FORM -->
+    <record id="action_my_app_inventory_orders_list_view"
+            model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_my_app_inventory_list"/>
+        <field name="act_window_id" ref="action_my_app_inventory_orders"/>
+    </record>
+
+    <record id="action_my_app_inventory_orders_form_view"
+            model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_my_app_inventory_form"/>
+        <field name="act_window_id" ref="action_my_app_inventory_orders"/>
+    </record>
+
+    <!-- INVENTORY CHECK MENU -->
     <menuitem id="menu_my_app_inventory_orders"
               name="Inventory Check"
               parent="my_app.menu_my_app_root"
