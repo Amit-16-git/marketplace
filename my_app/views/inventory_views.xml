@@ -6,7 +6,7 @@
         <field name="name">my_app.order.inventory.list</field>
         <field name="model">my_app.order</field>
         <field name="arch" type="xml">
-            <list string="New Orders for Inventory"
+            <list string="Inventory Orders"
                   create="false"
                   edit="false"
                   delete="false">
@@ -52,7 +52,7 @@
 
                     <field name="state"
                            widget="statusbar"
-                           statusbar_visible="new,checking_inventory,inventory_checked,pending_stock"/>
+                           statusbar_visible="new,checking_inventory,inventory_checked,pending_stock,processing,completed,on_hold,ready_to_ship,shipped"/>
                 </header>
 
                 <sheet>
@@ -108,16 +108,16 @@
         </field>
     </record>
 
-    <!-- Inventory Orders Action: show only New orders -->
+    <!-- Inventory Check: hide orders at Ready to Ship and Shipped -->
     <record id="action_my_app_inventory_orders" model="ir.actions.act_window">
         <field name="name">Inventory Check</field>
         <field name="res_model">my_app.order</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">[('state', '=', 'new')]</field>
+        <field name="domain">[('state', 'in', ['new', 'checking_inventory', 'inventory_checked', 'pending_stock', 'processing', 'completed', 'on_hold'])]</field>
         <field name="context">{}</field>
     </record>
 
-    <!-- Use the inventory list view for this action -->
+    <!-- Inventory List View -->
     <record id="action_my_app_inventory_orders_list"
             model="ir.actions.act_window.view">
         <field name="sequence" eval="1"/>
@@ -126,7 +126,7 @@
         <field name="act_window_id" ref="action_my_app_inventory_orders"/>
     </record>
 
-    <!-- Use the inventory form view for this action -->
+    <!-- Inventory Form View -->
     <record id="action_my_app_inventory_orders_form"
             model="ir.actions.act_window.view">
         <field name="sequence" eval="2"/>
@@ -135,7 +135,7 @@
         <field name="act_window_id" ref="action_my_app_inventory_orders"/>
     </record>
 
-    <!-- Inventory Check Menu: Administrator and My App Manager -->
+    <!-- Inventory Check Menu -->
     <menuitem id="menu_my_app_inventory_orders"
               name="Inventory Check"
               parent="my_app.menu_my_app_root"
