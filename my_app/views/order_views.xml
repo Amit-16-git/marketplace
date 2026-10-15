@@ -23,7 +23,7 @@
         </field>
     </record>
 
-    <!-- Basic Order Search: No Filters or Group By -->
+    <!-- Basic Order Search -->
     <record id="view_my_app_order_search" model="ir.ui.view">
         <field name="name">my_app.order.search</field>
         <field name="model">my_app.order</field>
@@ -156,12 +156,13 @@
         </field>
     </record>
 
-    <!-- Order Action -->
+    <!-- Retailer Orders Action: hide Ready to Ship and Shipped -->
     <record id="action_my_app_orders" model="ir.actions.act_window">
         <field name="name">Retailer Orders</field>
         <field name="res_model">my_app.order</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_my_app_order_search"/>
+        <field name="domain">[('state', 'in', ['new', 'checking_inventory', 'inventory_checked', 'pending_stock', 'processing', 'completed', 'on_hold'])]</field>
     </record>
 
     <!-- Orders Menu -->
