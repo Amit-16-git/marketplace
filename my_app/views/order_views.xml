@@ -131,11 +131,10 @@
                     <notebook>
                         <page string="Order Lines">
                             <field name="order_line_ids">
-                                <list editable="bottom">
+                                <list>
                                     <field name="product_id"/>
                                     <field name="quantity"/>
-                                    <field name="price_unit"/>
-                                    <field name="price_subtotal" readonly="True"/>
+                                    <field name="rate"/>
                                 </list>
                             </field>
                         </page>
@@ -158,7 +157,7 @@
         <field name="search_view_id" ref="view_my_app_order_search"/>
     </record>
 
-    <!-- INVENTORY STAFF: EXCLUDE SHIPPING STATUSES -->
+    <!-- INVENTORY STAFF: EXCLUDE READY TO SHIP AND SHIPPED -->
     <record id="action_my_app_orders_inventory" model="ir.actions.act_window">
         <field name="name">Retailer Orders</field>
         <field name="res_model">my_app.order</field>
