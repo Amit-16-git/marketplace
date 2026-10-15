@@ -192,30 +192,12 @@
         <field name="search_view_id" ref="view_my_app_order_search"/>
     </record>
 
-    <!-- INVENTORY STAFF: NON-SHIPPING STATUSES ONLY -->
-    <record id="action_my_app_orders_inventory" model="ir.actions.act_window">
-        <field name="name">Retailer Orders</field>
-        <field name="res_model">my_app.order</field>
-        <field name="view_mode">list,form</field>
-        <field name="view_id" ref="view_my_app_order_list"/>
-        <field name="search_view_id" ref="view_my_app_order_search"/>
-        <field name="domain">[('state', 'in', ['new', 'checking_inventory', 'inventory_checked', 'pending_stock', 'processing', 'completed', 'on_hold'])]</field>
-    </record>
-
-    <!-- MANAGER / ADMIN MENU -->
+    <!-- MANAGER / ADMIN MENU ONLY -->
     <menuitem id="menu_my_app_orders"
               name="Retailer Orders"
               parent="menu_my_app_root"
               action="action_my_app_orders"
               sequence="20"
               groups="base.group_system,my_app.group_my_app_manager"/>
-
-    <!-- INVENTORY STAFF MENU -->
-    <menuitem id="menu_my_app_orders_inventory"
-              name="Retailer Orders"
-              parent="menu_my_app_root"
-              action="action_my_app_orders_inventory"
-              sequence="21"
-              groups="my_app.group_my_app_inventory"/>
 
 </odoo>
