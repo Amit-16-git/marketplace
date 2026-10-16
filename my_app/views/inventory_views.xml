@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <!-- INVENTORY CHECK LIST -->
+    <!-- INVENTORY WORK QUEUE LIST -->
     <record id="view_my_app_inventory_list" model="ir.ui.view">
         <field name="name">my_app.inventory.list</field>
         <field name="model">my_app.order</field>
         <field name="arch" type="xml">
-            <list string="Inventory Check">
+            <list string="Inventory Work Queue">
                 <field name="name"/>
                 <field name="retailer_id"/>
                 <field name="create_date"/>
@@ -18,43 +18,51 @@
         </field>
     </record>
 
-    <!-- INVENTORY CHECK FORM -->
+    <!-- INVENTORY WORK QUEUE FORM -->
     <record id="view_my_app_inventory_form" model="ir.ui.view">
         <field name="name">my_app.inventory.form</field>
         <field name="model">my_app.order</field>
         <field name="arch" type="xml">
-            <form string="Inventory Check">
+            <form string="Inventory Work Queue">
                 <header>
                     <button name="action_claim_order"
                             type="object"
                             string="Claim Order"
-                            class="btn-primary"/>
+                            invisible="assigned_user_id != False and assigned_user_id != uid"/>
 
-                    <button name="action_start_inventory_check"
+                    <button name="action_start_processing"
                             type="object"
-                            string="Start Inventory Check"
-                            class="btn-primary"/>
+                            string="Start Processing"
+                            class="btn-primary"
+                            invisible="state != 'new'"/>
 
-                    <button name="action_inventory_checked"
+                    <button name="action_add_products"
                             type="object"
-                            string="Inventory Checked"
-                            class="btn-primary"/>
+                            string="Add Products"
+                            class="btn-primary"
+                            invisible="state != 'processing'"/>
 
-                    <button name="action_pending_stock"
+                    <button name="action_ready_to_ship"
                             type="object"
-                            string="Pending Stock"/>
+                            string="Ready to Ship"
+                            class="btn-primary"
+                            invisible="state != 'adding_products'"/>
 
-                    <button name="action_put_on_hold"
+                    <button name="action_dispatch"
                             type="object"
-                            string="Put On Hold"/>
+                            string="Dispatch"
+                            class="btn-primary"
+                            invisible="state != 'ready_to_ship'"/>
 
-                    <button name="action_resume_order"
+                    <button name="action_deliver"
                             type="object"
-                            string="Resume Order"/>
+                            string="Mark Delivered"
+                            class="btn-primary"
+                            invisible="state != 'dispatched'"/>
 
                     <field name="state"
                            widget="statusbar"
-                           statusbar_visible="new,checking_inventory,inventory_checked,pending_stock,processing,completed,on_hold"/>
+                           statusbar_visible="new,processing,adding_products,ready_to_ship,dispatched,delivered"/>
                 </header>
 
                 <sheet>
@@ -80,7 +88,8 @@
 
                     <notebook>
                         <page string="Order Lines">
-                            <field name="order_line_ids" readonly="True">
+                            <field name="order_line_ids"
+                                   readonly="state in ['ready_to_ship', 'dispatched', 'delivered']">
                                 <list>
                                     <field name="product_id"/>
                                     <field name="quantity"/>
@@ -88,11 +97,6 @@
                                     <field name="subtotal"/>
                                 </list>
                             </field>
-                        </page>
-
-                        <page string="Hold Details">
-                            <field name="hold_reason"
-                                   placeholder="Enter the reason for putting this order on hold..."/>
                         </page>
 
                         <page string="Status History">
@@ -111,35 +115,40 @@
         </field>
     </record>
 
-    <!-- INVENTORY CHECK ACTION -->
-    <record id="action_my_app_inventory_orders" model="ir.actions.act_window">
-        <field name="name">Inventory Check</field>
+    <!-- INVENTORY WORK QUEUE ACTION -->
+    <record id="action_my_app_inventory_orders"
+            model="ir.actions.act_window">
+        <field name="name">Inventory Work Queue</field>
         <field name="res_model">my_app.order</field>
         <field name="view_mode">list,form</field>
-        <field name="search_view_id" ref="my_app.view_my_app_order_search"/>
-        <field name="domain">[('state', 'in', ['new', 'checking_inventory', 'inventory_checked', 'pending_stock', 'processing', 'completed', 'on_hold'])]</field>
+        <field name="search_view_id"
+               ref="my_app.view_my_app_order_search"/>
+        <field name="domain">[('state', 'in', ['new', 'processing', 'adding_products', 'ready_to_ship', 'dispatched', 'delivered'])]</field>
     </record>
 
-    <!-- USE THE INVENTORY-SPECIFIC LIST AND FORM -->
+    <!-- INVENTORY LIST VIEW -->
     <record id="action_my_app_inventory_orders_list_view"
             model="ir.actions.act_window.view">
         <field name="sequence" eval="1"/>
         <field name="view_mode">list</field>
         <field name="view_id" ref="view_my_app_inventory_list"/>
-        <field name="act_window_id" ref="action_my_app_inventory_orders"/>
+        <field name="act_window_id"
+               ref="action_my_app_inventory_orders"/>
     </record>
 
+    <!-- INVENTORY FORM VIEW -->
     <record id="action_my_app_inventory_orders_form_view"
             model="ir.actions.act_window.view">
         <field name="sequence" eval="2"/>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_my_app_inventory_form"/>
-        <field name="act_window_id" ref="action_my_app_inventory_orders"/>
+        <field name="act_window_id"
+               ref="action_my_app_inventory_orders"/>
     </record>
 
-    <!-- INVENTORY CHECK MENU -->
+    <!-- INVENTORY WORK QUEUE MENU -->
     <menuitem id="menu_my_app_inventory_orders"
-              name="Inventory Check"
+              name="Inventory Work Queue"
               parent="my_app.menu_my_app_root"
               action="action_my_app_inventory_orders"
               sequence="15"
