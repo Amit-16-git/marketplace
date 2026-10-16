@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
@@ -35,37 +36,25 @@
                         string="New"
                         domain="[('state', '=', 'new')]"/>
 
-                <filter name="filter_checking_inventory"
-                        string="Checking Inventory"
-                        domain="[('state', '=', 'checking_inventory')]"/>
-
-                <filter name="filter_inventory_checked"
-                        string="Inventory Checked"
-                        domain="[('state', '=', 'inventory_checked')]"/>
-
-                <filter name="filter_pending_stock"
-                        string="Pending Stock"
-                        domain="[('state', '=', 'pending_stock')]"/>
-
                 <filter name="filter_processing"
                         string="Processing"
                         domain="[('state', '=', 'processing')]"/>
 
-                <filter name="filter_completed"
-                        string="Completed"
-                        domain="[('state', '=', 'completed')]"/>
-
-                <filter name="filter_on_hold"
-                        string="On Hold"
-                        domain="[('state', '=', 'on_hold')]"/>
+                <filter name="filter_adding_products"
+                        string="Adding Products"
+                        domain="[('state', '=', 'adding_products')]"/>
 
                 <filter name="filter_ready_to_ship"
                         string="Ready to Ship"
                         domain="[('state', '=', 'ready_to_ship')]"/>
 
-                <filter name="filter_shipped"
-                        string="Shipped"
-                        domain="[('state', '=', 'shipped')]"/>
+                <filter name="filter_dispatched"
+                        string="Dispatched"
+                        domain="[('state', '=', 'dispatched')]"/>
+
+                <filter name="filter_delivered"
+                        string="Delivered"
+                        domain="[('state', '=', 'delivered')]"/>
             </search>
         </field>
     </record>
@@ -80,53 +69,41 @@
                     <button name="action_claim_order"
                             type="object"
                             string="Claim Order"
-                            class="btn-primary"/>
-
-                    <button name="action_start_inventory_check"
-                            type="object"
-                            string="Start Inventory Check"
-                            class="btn-primary"/>
-
-                    <button name="action_inventory_checked"
-                            type="object"
-                            string="Inventory Checked"
-                            class="btn-primary"/>
-
-                    <button name="action_pending_stock"
-                            type="object"
-                            string="Pending Stock"/>
+                            invisible="assigned_user_id != False and assigned_user_id != uid"/>
 
                     <button name="action_start_processing"
                             type="object"
                             string="Start Processing"
-                            class="btn-primary"/>
+                            class="btn-primary"
+                            invisible="state != 'new'"/>
 
-                    <button name="action_complete_processing"
+                    <button name="action_add_products"
                             type="object"
-                            string="Complete Processing"
-                            class="btn-primary"/>
-
-                    <button name="action_put_on_hold"
-                            type="object"
-                            string="Put On Hold"/>
-
-                    <button name="action_resume_order"
-                            type="object"
-                            string="Resume Order"/>
+                            string="Add Products"
+                            class="btn-primary"
+                            invisible="state != 'processing'"/>
 
                     <button name="action_ready_to_ship"
                             type="object"
                             string="Ready to Ship"
-                            class="btn-primary"/>
+                            class="btn-primary"
+                            invisible="state != 'adding_products'"/>
 
-                    <button name="action_mark_shipped"
+                    <button name="action_dispatch"
                             type="object"
-                            string="Mark Shipped"
-                            class="btn-primary"/>
+                            string="Dispatch"
+                            class="btn-primary"
+                            invisible="state != 'ready_to_ship'"/>
+
+                    <button name="action_deliver"
+                            type="object"
+                            string="Mark Delivered"
+                            class="btn-primary"
+                            invisible="state != 'dispatched'"/>
 
                     <field name="state"
                            widget="statusbar"
-                           statusbar_visible="new,checking_inventory,inventory_checked,pending_stock,processing,completed,on_hold,ready_to_ship,shipped"/>
+                           statusbar_visible="new,processing,adding_products,ready_to_ship,dispatched,delivered"/>
                 </header>
 
                 <sheet>
@@ -152,7 +129,8 @@
 
                     <notebook>
                         <page string="Order Lines">
-                            <field name="order_line_ids">
+                            <field name="order_line_ids"
+                                   readonly="state in ['ready_to_ship', 'dispatched', 'delivered']">
                                 <list editable="bottom">
                                     <field name="product_id"/>
                                     <field name="quantity"/>
@@ -160,11 +138,6 @@
                                     <field name="subtotal" readonly="True"/>
                                 </list>
                             </field>
-                        </page>
-
-                        <page string="Hold Details">
-                            <field name="hold_reason"
-                                   placeholder="Enter the reason for putting this order on hold..."/>
                         </page>
 
                         <page string="Status History">
@@ -183,7 +156,7 @@
         </field>
     </record>
 
-    <!-- MANAGER / ADMIN: ALL ORDERS -->
+    <!-- ALL RETAILER ORDERS -->
     <record id="action_my_app_orders" model="ir.actions.act_window">
         <field name="name">Retailer Orders</field>
         <field name="res_model">my_app.order</field>
@@ -192,7 +165,7 @@
         <field name="search_view_id" ref="view_my_app_order_search"/>
     </record>
 
-    <!-- MANAGER / ADMIN MENU ONLY -->
+    <!-- MANAGER / ADMIN MENU -->
     <menuitem id="menu_my_app_orders"
               name="Retailer Orders"
               parent="menu_my_app_root"
