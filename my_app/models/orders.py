@@ -1,4 +1,5 @@
-from odoo import models, fields, api, _
+
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
@@ -41,6 +42,13 @@ class RetailerOrder(models.Model):
         default='new',
         index=True,
         tracking=True,
+    )
+
+    is_pending = fields.Boolean(
+        string='Pending Order',
+        default=False,
+        copy=False,
+        index=True,
     )
 
     department = fields.Selection(
@@ -107,26 +115,19 @@ class RetailerOrder(models.Model):
         return orders
 
     def write(self, vals):
-        old_states = {
-            order.id: order.state
-            for order in self
-        }
-
+        old_states = {order.id: order.state for order in self}
         result = super().write(vals)
 
         if 'state' in vals:
             for order in self:
                 old_state = old_states.get(order.id)
                 if old_state != order.state:
-                    order._log_status_change(
-                        old_state, order.state
-                    )
+                    order._log_status_change(old_state, order.state)
 
         return result
 
     def _log_status_change(self, old_state, new_state):
         self.ensure_one()
-
         self.env['my_app.order.history'].sudo().create({
             'order_id': self.id,
             'old_state': old_state or False,
@@ -137,6 +138,11 @@ class RetailerOrder(models.Model):
 
     def action_claim_order(self):
         for order in self:
+            if order.is_pending:
+                raise ValidationError(
+                    _('Resume this order before claiming it.')
+                )
+
             if (
                 order.assigned_user_id
                 and order.assigned_user_id != self.env.user
@@ -145,39 +151,66 @@ class RetailerOrder(models.Model):
                     _('This order is already assigned to another staff member.')
                 )
 
-            order.assigned_user_id = self.env.user
+            order.write({
+                'assigned_user_id': self.env.user.id,
+            })
+
+    def action_pending_order(self):
+        for order in self:
+            if order.state == 'delivered':
+                raise ValidationError(
+                    _('A delivered order cannot be marked as pending.')
+                )
+
+            order.write({
+                'is_pending': True,
+                'assigned_user_id': False,
+            })
+
+    def action_resume_order(self):
+        self.write({'is_pending': False})
 
     def action_start_processing(self):
-        self.write({
-            'state': 'processing',
-            'department': 'processing',
-        })
+        for order in self:
+            if order.state == 'new' and not order.is_pending:
+                order.write({
+                    'state': 'processing',
+                    'department': 'processing',
+                })
 
     def action_add_products(self):
-        self.write({
-            'state': 'adding_products',
-            'department': 'processing',
-        })
+        for order in self:
+            if order.state == 'processing' and not order.is_pending:
+                order.write({
+                    'state': 'adding_products',
+                    'department': 'processing',
+                })
 
     def action_ready_to_ship(self):
-        self.write({
-            'state': 'ready_to_ship',
-            'department': 'shipping',
-            'assigned_user_id': False,
-        })
+        for order in self:
+            if order.state == 'adding_products' and not order.is_pending:
+                order.write({
+                    'state': 'ready_to_ship',
+                    'department': 'shipping',
+                    'assigned_user_id': False,
+                })
 
     def action_dispatch(self):
-        self.write({
-            'state': 'dispatched',
-            'department': 'shipping',
-        })
+        for order in self:
+            if order.state == 'ready_to_ship' and not order.is_pending:
+                order.write({
+                    'state': 'dispatched',
+                    'department': 'shipping',
+                })
 
     def action_deliver(self):
-        self.write({
-            'state': 'delivered',
-            'department': 'management',
-            'assigned_user_id': False,
-        })
+        for order in self:
+            if order.state == 'dispatched' and not order.is_pending:
+                order.write({
+                    'state': 'delivered',
+                    'department': 'management',
+                    'assigned_user_id': False,
+                })
 
 
 class RetailerOrderLine(models.Model):
@@ -225,10 +258,7 @@ class RetailerOrderLine(models.Model):
     @api.onchange('product_id')
     def _onchange_product_id(self):
         for line in self:
-            if line.product_id:
-                line.rate = line.product_id.lst_price
-            else:
-                line.rate = 0.0
+            line.rate = line.product_id.lst_price if line.product_id else 0.0
 
     @api.constrains('quantity', 'rate')
     def _check_quantity_and_rate(self):
@@ -237,7 +267,6 @@ class RetailerOrderLine(models.Model):
                 raise ValidationError(
                     _('Quantity must be greater than zero.')
                 )
-
             if line.rate < 0:
                 raise ValidationError(
                     _('Unit price cannot be negative.')
